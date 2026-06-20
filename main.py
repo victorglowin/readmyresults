@@ -9,12 +9,35 @@ load_dotenv()
 app = FastAPI()
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
+PROMPT = """You are a medical assistant helping a patient understand their health document.
+Respond in this exact structure:
+
+## Plain-Language Explanation
+Explain the report in simple terms. Bold and clearly flag any results or findings that are notable or worth paying attention to.
+
+## Questions to Ask Your Doctor
+3-5 specific questions this patient should ask at their next visit, based on this report.
+
+## Possible Follow-Up Tests
+List any tests the doctor might reasonably order next, each with a one-line plain-language description of what it checks.
+
+## Staying Calm & Taking Care of Yourself
+Non-medical, practical advice for managing anxiety or stress around these results, not treatment advice.
+
+## Disclaimer
+A clear statement that this is not medical advice and the patient should consult their doctor before acting on anything here.
+
+Now analyze the attached document:
+"""
+
+ALLOWED_TYPES = {"image/jpeg", "image/png", "application/pdf"}
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
+
+
 @app.get("/")
 def read_root():
     return {"message": "ReadMyResults backend is alive"}
 
-ALLOWED_TYPES = {"image/jpeg", "image/png", "application/pdf"}
-MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 
 @app.post("/upload")
 async def upload_document(file: UploadFile = File(...)):
@@ -36,8 +59,7 @@ async def upload_document(file: UploadFile = File(...)):
         response = client.models.generate_content(
             model="gemini-2.5-flash",
             contents=[
-                "You are a medical assistant. Explain this health document in simple, "
-                "plain language a non-medical person can understand. Be clear and reassuring.",
+                PROMPT,
                 types.Part.from_bytes(data=contents, mime_type=file.content_type),
             ],
         )
