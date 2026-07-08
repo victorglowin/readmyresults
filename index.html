@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReadMyResults — Understand Your Health</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f0f4f2;
+      color: #2d2d2d;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #0a7c5c;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    header svg { width: 38px; height: 38px; flex-shrink: 0; }
+
+    .header-text h1 {
+      color: white;
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      line-height: 1.2;
+    }
+
+    .header-text h1 span { color: #4cd99a; }
+
+    .header-text p {
+      color: #a8dfc9;
+      font-size: 0.68rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-top: 1px;
+    }
+
+    .hero {
+      background: #0a7c5c;
+      padding: 28px 24px 52px;
+      text-align: center;
+      color: white;
+    }
+
+    .hero h2 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      font-size: 0.92rem;
+      color: #c8ead9;
+      max-width: 460px;
+      margin: 0 auto;
+      line-height: 1.65;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 28px;
+      max-width: 600px;
+      margin: -28px auto 32px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.09);
+    }
+
+    .upload-area {
+      border: 2px dashed #0a7c5c;
+      border-radius: 10px;
+      padding: 36px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-bottom: 20px;
+    }
+
+    .upload-area:hover { background: #f0faf6; }
+    .upload-area input { display: none; }
+    .upload-icon { font-size: 2rem; margin-bottom: 10px; }
+
+    .upload-area label {
+      display: block;
+      cursor: pointer;
+      color: #0a7c5c;
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 6px;
+    }
+
+    .upload-area .hint { font-size: 0.82rem; color: #999; }
+
+    .file-selected {
+      background: #f0faf6;
+      border: 2px solid #0a7c5c;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      color: #0a7c5c;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    button.primary {
+      width: 100%;
+      padding: 15px;
+      background: #0a7c5c;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button.primary:hover { background: #086b4f; }
+    button.primary:disabled { background: #b0c9bf; cursor: not-allowed; }
+
+    .status {
+      margin-top: 16px;
+      font-size: 0.88rem;
+      color: #0a7c5c;
+      text-align: center;
+      font-style: italic;
+    }
+
+    .error {
+      color: #c0392b;
+      margin-top: 14px;
+      text-align: center;
+      font-size: 0.9rem;
+      background: #fdf0ee;
+      padding: 10px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .result-card {
+      background: white;
+      border-radius: 16px;
+      padding: 28px;
+      max-width: 600px;
+      margin: 0 auto 40px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      display: none;
+    }
+
+    .result-card h3 {
+      color: #0a7c5c;
+      font-size: 1rem;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #e8f5ef;
+    }
+
+    .result-body { line-height: 1.8; font-size: 0.93rem; color: #333; }
+
+    .section-header {
+      font-weight: 700;
+      color: #0a7c5c;
+      font-size: 0.92rem;
+      margin-top: 22px;
+      margin-bottom: 8px;
+      padding: 6px 10px;
+      background: #f0faf6;
+      border-left: 3px solid #0a7c5c;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .result-body p { margin-bottom: 10px; }
+    .result-body strong { color: #0a5c42; }
+
+    .result-body ul {
+      padding-left: 18px;
+      margin-bottom: 10px;
+    }
+
+    .result-body li { margin-bottom: 7px; }
+
+    .disclaimer-block {
+      background: #fff8e6;
+      border-left: 3px solid #f0a500;
+      padding: 12px 14px;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.83rem;
+      color: #7a5c00;
+      margin-top: 20px;
+      line-height: 1.65;
+    }
+
+    button.download {
+      margin-top: 20px;
+      width: 100%;
+      padding: 13px;
+      background: white;
+      color: #0a7c5c;
+      border: 2px solid #0a7c5c;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    button.download:hover { background: #0a7c5c; color: white; }
+
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 0.78rem;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <svg viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="1" width="28" height="34" rx="4" fill="#fff" opacity="0.15"/>
+      <rect x="2" y="1" width="28" height="34" rx="4" fill="white" opacity="0.9"/>
+      <path d="M28 1 L34 7 L28 7 Z" fill="#086b4f"/>
+      <rect x="28" y="1" width="6" height="6" rx="1" fill="#086b4f"/>
+      <text x="33" y="6" font-size="7" fill="#4cd99a" font-weight="900">+</text>
+      <polyline points="8,19 13,25 24,13" stroke="#0a7c5c" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
+    <div class="header-text">
+      <h1>Read<span>My</span>Results</h1>
+      <p>Understand Your Own Healthcare</p>
+    </div>
+  </header>
+
+  <div class="hero">
+    <h2>Your health report, in plain language</h2>
+    <p>Upload any medical report — lab results, scans, X-rays and more — and get a clear, plain-language breakdown in seconds.</p>
+  </div>
+
+  <div class="card">
+    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+      <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFile(this)">
+      <div class="upload-icon">📄</div>
+      <label>Tap to upload your report</label>
+      <div class="hint">JPG, PNG or PDF &nbsp;·&nbsp; Max 10MB</div>
+    </div>
+
+    <div class="file-selected" id="fileSelected">📎 <span id="fileName"></span></div>
+
+    <button class="primary" id="submitBtn" onclick="submitFile()" disabled>Analyse My Report</button>
+    <div class="status" id="status"></div>
+    <div class="error" id="error"></div>
+  </div>
+
+  <div class="result-card" id="resultCard">
+    <h3>Analysis — <span id="resultFileName"></span></h3>
+    <div class="result-body" id="resultBody"></div>
+    <button class="download" onclick="downloadResult()">Download Analysis</button>
+  </div>
+
+  <footer>ReadMyResults does not provide medical advice. Always consult a qualified healthcare professional.</footer>
+
+  <script>
+    let selectedFile = null;
+    let lastExplanation = '';
+    let lastFileName = '';
+
+    const SECTION_HEADERS = [
+      'PLAIN-LANGUAGE EXPLANATION',
+      'KEY FINDINGS TO NOTE',
+      'QUESTIONS TO ASK YOUR DOCTOR',
+      'POSSIBLE NEXT STEPS',
+      'TAKING CARE OF YOURSELF',
+      'DISCLAIMER'
+    ];
+
+    function handleFile(input) {
+      selectedFile = input.files[0];
+      if (selectedFile) {
+        document.getElementById('fileName').textContent = selectedFile.name;
+        document.getElementById('fileSelected').style.display = 'block';
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('error').style.display = 'none';
+        document.getElementById('resultCard').style.display = 'none';
+      }
+    }
+
+    function parseMarkdown(text) {
+      return text
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/^[\*\-]\s+(.+)/gm, '<li>$1</li>')
+        .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
+    }
+
+    function renderResult(text) {
+      let html = '';
+      const upperText = text.toUpperCase();
+
+      SECTION_HEADERS.forEach((header, i) => {
+        const idx = upperText.indexOf(header);
+        if (idx === -1) return;
+
+        const nextIdx = SECTION_HEADERS.slice(i + 1).reduce((found, h) => {
+          const pos = upperText.indexOf(h);
+          return (pos !== -1 && (found === -1 || pos < found)) ? pos : found;
+        }, -1);
+
+        const rawContent = nextIdx !== -1
+          ? text.slice(idx + header.length, nextIdx).trim()
+          : text.slice(idx + header.length).trim();
+
+        const parsedContent = rawContent
+          .split('\n')
+          .filter(l => l.trim())
+          .map(l => {
+            const parsed = parseMarkdown(l.trim());
+            return parsed.startsWith('<li>') ? parsed : `<p>${parsed}</p>`;
+          })
+          .join('');
+
+        if (header === 'DISCLAIMER') {
+          html += `<div class="disclaimer-block">${parsedContent}</div>`;
+        } else {
+          html += `<div class="section-header">${header}</div>${parsedContent}`;
+        }
+      });
+
+      document.getElementById('resultBody').innerHTML = html || `<p>${parseMarkdown(text)}</p>`;
+    }
+
+    async function submitFile() {
+      if (!selectedFile) return;
+      document.getElementById('submitBtn').disabled = true;
+      document.getElementById('status').textContent = 'Analysing your report, please wait...';
+      document.getElementById('error').style.display = 'none';
+      document.getElementById('resultCard').style.display = 'none';
+
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+
+      try {
+        const response = await fetch('http://127.0.0.1:8000/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          document.getElementById('error').textContent = data.detail || 'Something went wrong. Please try again.';
+          document.getElementById('error').style.display = 'block';
+        } else {
+          lastExplanation = data.explanation;
+          lastFileName = data.filename;
+          document.getElementById('resultFileName').textContent = data.filename;
+          renderResult(data.explanation);
+          document.getElementById('resultCard').style.display = 'block';
+          document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
+        }
+      } catch (err) {
+        document.getElementById('error').textContent = 'Could not reach the server. Please check your connection.';
+        document.getElementById('error').style.display = 'block';
+      } finally {
+        document.getElementById('status').textContent = '';
+        document.getElementById('submitBtn').disabled = false;
+      }
+    }
+
+    function downloadResult() {
+      const content = `READMYRESULTS ANALYSIS\nFile: ${lastFileName}\nDate: ${new Date().toLocaleDateString()}\n\n${lastExplanation}\n\nReadMyResults does not provide medical advice. Always consult a qualified healthcare professional.`;
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ReadMyResults_${lastFileName.replace(/\.[^.]+$/, '')}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
