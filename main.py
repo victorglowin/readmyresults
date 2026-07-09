@@ -1,10 +1,17 @@
 import os
+import logging
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from google import genai
 from google.genai import types
 
 load_dotenv()
+
+logging.basicConfig(
+    filename="usage_log.txt",
+    level=logging.INFO,
+    format="%(asctime)s - %(message)s"
+)
 
 app = FastAPI()
 
@@ -62,7 +69,10 @@ def read_root():
 
 @app.post("/upload")
 async def upload_document(file: UploadFile = File(...)):
+    logging.info(f"UPLOAD_ATTEMPT - filename={file.filename} - type={file.content_type}")
+
     if file.content_type not in ALLOWED_TYPES:
+        logging.info(f"UPLOAD_REJECTED - filename={file.filename} - reason=invalid_type")
         raise HTTPException(
             status_code=400,
             detail="Unsupported file type. Please upload a JPG, PNG, or PDF."
@@ -71,6 +81,7 @@ async def upload_document(file: UploadFile = File(...)):
     contents = await file.read()
 
     if len(contents) > MAX_FILE_SIZE:
+        logging.info(f"UPLOAD_REJECTED - filename={file.filename} - reason=too_large")
         raise HTTPException(
             status_code=400,
             detail="File too large. Please upload a file under 10MB."
@@ -85,10 +96,13 @@ async def upload_document(file: UploadFile = File(...)):
             ],
         )
     except Exception:
+        logging.info(f"UPLOAD_FAILED - filename={file.filename} - reason=gemini_error")
         raise HTTPException(
             status_code=503,
             detail="We couldn't process your document right now. Please check your connection and try again."
         )
+
+    logging.info(f"UPLOAD_SUCCESS - filename={file.filename}")
 
     return {
         "filename": file.filename,
