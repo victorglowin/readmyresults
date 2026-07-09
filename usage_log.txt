@@ -1,0 +1,14 @@
+2026-07-09 04:29:22,795 - UPLOAD_ATTEMPT - filename=uss report sample.docx - type=application/vnd.openxmlformats-officedocument.wordprocessingml.document
+2026-07-09 04:29:22,795 - UPLOAD_REJECTED - filename=uss report sample.docx - reason=invalid_type
+2026-07-09 04:29:46,712 - UPLOAD_ATTEMPT - filename=uss report sample.pdf - type=application/pdf
+2026-07-09 04:29:46,713 - AFC is enabled with max remote calls: 10.
+2026-07-09 04:30:00,812 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 503 Service Unavailable"
+2026-07-09 04:30:00,822 - UPLOAD_FAILED - filename=uss report sample.pdf - reason=gemini_error
+2026-07-09 04:38:46,649 - UPLOAD_ATTEMPT - filename=uss report sample.pdf - type=application/pdf
+2026-07-09 04:38:46,650 - AFC is enabled with max remote calls: 10.
+2026-07-09 04:39:14,594 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-09 04:39:14,599 - UPLOAD_SUCCESS - filename=uss report sample.pdf
+2026-07-09 04:41:15,359 - UPLOAD_ATTEMPT - filename=uss report sample.pdf - type=application/pdf
+2026-07-09 04:41:15,360 - AFC is enabled with max remote calls: 10.
+2026-07-09 04:41:38,450 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-07-09 04:41:38,453 - UPLOAD_SUCCESS - filename=uss report sample.pdf
